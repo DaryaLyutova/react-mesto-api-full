@@ -1,0 +1,11 @@
+.logo {
+    width: 142px;
+    height: 33px;
+    padding: 45px 0 40px 0;
+}
+
+@media all and (max-width: 900px) {
+    .logo {
+        padding: 28px 0 31px 27px;
+    }
+}

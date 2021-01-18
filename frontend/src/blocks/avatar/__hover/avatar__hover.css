@@ -1,0 +1,14 @@
+.avatar__hover {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  background-image: url(../../../images/avatar/Vector.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-position: center;
+  opacity: 0;
+}
+
+.avatar__hover:hover {
+  opacity: 1;
+  cursor: pointer;
+}

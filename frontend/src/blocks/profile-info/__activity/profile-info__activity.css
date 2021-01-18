@@ -1,0 +1,23 @@
+.profile-info__activity {
+    display: flex;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 22px;
+    margin: 0 0 0 30px;
+    max-width: 500px;
+}
+
+@media all and (max-width: 900px) {
+    .profile-info__activity {
+        margin: 0 auto 36px auto;
+        text-align:  center;
+    }
+}
+
+@media all and (max-width: 605px) {
+    .profile-info__activity {
+        font-size: 14px;
+        line-height: 17px;
+    }
+}
