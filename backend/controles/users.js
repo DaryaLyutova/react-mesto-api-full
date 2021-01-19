@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
@@ -23,14 +24,14 @@ const getUser = (req, res) => {
     });
 };
 
-const postUser = (req, res) => {
+const createUser = (req, res) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
       return User.create({
         name: req.body.name,
         about: req.body.about,
-        email: req.body.email,
         avatar: req.body.avatar,
+        email: req.body.email,
         password: hash,
       });
     })
@@ -41,8 +42,33 @@ const postUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Некорректно введенные данные' });
       } else {
+        if (err.name === 'MongoError') {
+          res.send({ message: 'Пользователь с данным именем уже существует' });
+        }
         res.status(500).send({ message: 'Упс! У нас ошибка, разберемся!' });
       }
+    });
+};
+
+const login = (req, res) => {
+  return User.findUserByCredentials(req.body.email, req.body.password)
+    .then((user) => {
+      // аутентификация успешна! пользователь в переменной user
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // вернём токен
+      // res.send({ token });
+      res
+        .cookie('token', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .end();
+    })
+    .catch((err) => {
+      // ошибка аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
 
@@ -99,5 +125,5 @@ const updateAvatar = (req, res) => {
 };
 
 module.exports = {
-  getUsers, getUser, postUser, getMe, updateUser, updateAvatar,
+  getUsers, getUser, createUser, login, getMe, updateUser, updateAvatar,
 };
