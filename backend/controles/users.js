@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
@@ -23,9 +24,19 @@ const getUser = (req, res) => {
 };
 
 const postUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => { res.send({ body: user }); })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => {
+      return User.create({
+        name: req.body.name,
+        about: req.body.about,
+        email: req.body.email,
+        avatar: req.body.avatar,
+        password: hash,
+      });
+    })
+    .then((user) => {
+      res.send({ body: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Некорректно введенные данные' });
