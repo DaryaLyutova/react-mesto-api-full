@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const {
   getCards, getCard, createCard, deleteCard, likeCard, dislikeCard,
-} = require('../controles/cards');
+} = require('../controllers/cards');
 
 router.get('/cards', getCards);
 router.get('/cards/:_id', getCard);

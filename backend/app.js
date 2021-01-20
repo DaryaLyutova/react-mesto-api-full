@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const app = express();
 
@@ -28,6 +30,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post('/signup', createUser);
+app.post('/signin', login);
+
+// защита авторизацией
+app.use(auth);
 app.use('/', cardsRouter);
 app.use('/', usersRouter);
 app.use('/', errorRouter);
