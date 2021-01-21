@@ -38,8 +38,17 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params._id)
-    .then((card) => { res.send({ data: card }); })
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if ((card.owner._id).toString() === req.user._id) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((trueCard) => {
+            res.send({ data: trueCard });
+          });
+      } else {
+        res.send({ message: 'Нет прав на удаление данной карточки' });
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(404).send({ message: 'Данная карточка отсутствует' });

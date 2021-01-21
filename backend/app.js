@@ -21,15 +21,6 @@ const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const errorRouter = require('./routes/errorUrl');
 
-// временное решение авторизации
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5fd617da82c76d00cc3e11aa',
-  };
-
-  next();
-});
-
 app.post('/signup', createUser);
 app.post('/signin', login);
 

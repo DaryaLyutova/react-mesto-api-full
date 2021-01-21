@@ -6,7 +6,7 @@ const {
 router.get('/cards', getCards);
 router.get('/cards/:_id', getCard);
 router.post('/cards', createCard);
-router.delete('/cards/:cardId/likes', deleteCard);
+router.delete('/cards/:cardId', deleteCard);
 router.post('/cards/:cardId/likes', likeCard);
 router.delete('/cards/:cardId/likes', dislikeCard);
 
