@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-error');
+const LoginError = require('../errors/login-error');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -73,7 +74,7 @@ const login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'Error') {
-        next(new BadRequestError('Неверный логин или пароль'));
+        next(new LoginError('Неверный логин или пароль'));
       }
       return next(err);
     });
