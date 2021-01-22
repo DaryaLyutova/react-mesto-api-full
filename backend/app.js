@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
@@ -30,7 +31,10 @@ app.use('/', cardsRouter);
 app.use('/', usersRouter);
 app.use('/', errorRouter);
 
-// обработчик ошибок
+// обработчик ошибок celebrate
+app.use(errors());
+
+// централизованный обработчик ошибок
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
