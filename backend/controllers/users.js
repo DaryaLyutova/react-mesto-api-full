@@ -3,26 +3,31 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/bad-request-error');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => { res.status(200).send(users); })
-    .catch(() => {
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
-      return res.status(200).send({ user });
+      if (user) {
+        res.send({ user });
+      }
+      // если такого пользователя нет,
+      // сгенерируем исключение
+      throw new NotFoundError('Нет пользователя с таким id');
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-      } else {
-        res.status(500).send({ message: 'Упс! У нас ошибка, разберемся!' });
+      // проверим на валидность
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
@@ -75,14 +80,15 @@ const login = (req, res) => {
     });
 };
 
-const getMe = (req, res) => {
+const getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       return res.status(200).send({ user });
     })
-    .catch(() => {
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
+  // .catch(() => {
+  //   res.status(500).send({ message: 'На сервере произошла ошибка' });
+  // });
 };
 
 const updateUser = (req, res) => {
