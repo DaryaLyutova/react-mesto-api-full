@@ -31,7 +31,7 @@ const getUser = (req, res, next) => {
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
       return User.create({
@@ -47,19 +47,18 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректно введенные данные' });
-      } else {
-        if (err.name === 'MongoError') {
-          res.send({ message: 'Пользователь с данным именем уже существует' });
-        }
-        res.status(500).send({ message: 'Упс! У нас ошибка, разберемся!' });
+        next(new BadRequestError('Переданы некорректные данные'));
       }
+      if (err.name === 'MongoError') {
+        next(new BadRequestError('Пользователь с данным именем уже существует'));
+      }
+      return next(err);
     });
 };
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   return User.findUserByCredentials(req.body.email, req.body.password)
     .then((user) => {
       // аутентификация успешна! пользователь в переменной user
@@ -73,10 +72,10 @@ const login = (req, res) => {
         .end();
     })
     .catch((err) => {
-      // ошибка аутентификации
-      res
-        .status(401)
-        .send({ message: err.message });
+      if (err.name === 'Error') {
+        next(new BadRequestError('Неверный логин или пароль'));
+      }
+      return next(err);
     });
 };
 
@@ -86,12 +85,9 @@ const getMe = (req, res, next) => {
       return res.status(200).send({ user });
     })
     .catch(next);
-  // .catch(() => {
-  //   res.status(500).send({ message: 'На сервере произошла ошибка' });
-  // });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
@@ -105,14 +101,13 @@ const updateUser = (req, res) => {
     .then((user) => { res.send({ data: user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректно введенные данные' });
-      } else {
-        res.status(500).send({ message: 'Упс! У нас ошибка, разберемся!' });
+        next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -126,10 +121,9 @@ const updateAvatar = (req, res) => {
     .then((user) => { res.send({ data: user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректно введенные данные' });
-      } else {
-        res.status(500).send({ message: 'Упс! У нас ошибка, разберемся!' });
+        next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
