@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
@@ -21,6 +22,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const errorRouter = require('./routes/errorUrl');
+
+// подключаем логгер запросов
+app.use(requestLogger);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -41,6 +45,8 @@ app.use('/', cardsRouter);
 app.use('/', usersRouter);
 app.use('/', errorRouter);
 
+// подключаем логгер ошибок
+app.use(errorLogger);
 // обработчик ошибок celebrate
 app.use(errors());
 
