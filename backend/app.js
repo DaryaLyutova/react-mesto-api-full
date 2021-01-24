@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const cors = require('cors');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -23,8 +24,16 @@ const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const errorRouter = require('./routes/errorUrl');
 
+app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
 // подключаем логгер запросов
 app.use(requestLogger);
+
+// краш-тест для проверки востановления сервиса pm2 после падения
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
