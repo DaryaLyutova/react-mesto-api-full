@@ -8,6 +8,8 @@ const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
+// app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
+app.use(cors());
 
 const PORT = 3000;
 
@@ -24,7 +26,6 @@ const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const errorRouter = require('./routes/errorUrl');
 
-app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
 // подключаем логгер запросов
 app.use(requestLogger);
 
