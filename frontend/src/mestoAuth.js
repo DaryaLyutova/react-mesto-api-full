@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://api.lutowa.darya.students.nomoredomains.monster';
+export const BASE_URL = 'http://api.lutowa.darya.students.nomoredomains.monster';
 
 // запрос на регистрацию пользователя
 export const register = (email, password) => {
