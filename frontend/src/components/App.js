@@ -41,7 +41,7 @@ function App() {
     mestoAuth.register(email, password).then((data) => {
       if (data) {
         resetForm();
-        handleInfoTooltipOk();        
+        handleInfoTooltipOk();
         history.push('/sign-in');
       } else {
         handleInfoTooltipErr();
@@ -63,6 +63,11 @@ function App() {
             setUserEmail(data.data.email)
             history.push('/');
           }
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoggedIn(true);
+          localStorage.removeItem('token');
         })
     }
   }
@@ -114,8 +119,8 @@ function App() {
       subtitle: 'Что-то пошло не так! Попробуйте ещё раз.',
     });
   }
-
   React.useEffect(() => {
+    if (localStorage.getItem('token') === true) {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, initialCards]) => {
         setCurrentUser(userData);
@@ -130,6 +135,7 @@ function App() {
       }).catch((err) => {
         alert(err);
       })
+    }
   }, []);
 
   function handleEditProfileClick() {

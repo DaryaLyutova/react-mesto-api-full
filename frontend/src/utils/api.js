@@ -67,9 +67,9 @@ class Api {
 
 //создание экземпляра класса
 const api = new Api({
-  url: 'https://api.lutowa.darya.students.nomoredomains.monster',
+  url: 'http://api.lutowa.darya.students.nomoredomains.monster',
   headers: {
-    // authorization: 'db246294-1b1a-41e2-ab61-b5ce8b44318f',
+    authorization: `Bearer ${localStorage.getItem('token')}`,
     'Content-Type': 'application/json',
   },
 });

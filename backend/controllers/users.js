@@ -65,12 +65,7 @@ const login = (req, res, next) => {
       // аутентификация успешна! пользователь в переменной user
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
       // вернём токен
-      res
-        .cookie('token', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .end();
+      res.send({ token });
     })
     .catch((err) => {
       if (err.name === 'Error') {
