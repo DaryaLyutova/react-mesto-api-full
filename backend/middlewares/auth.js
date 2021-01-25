@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
@@ -13,10 +14,10 @@ module.exports = (req, res, next) => {
   }
   const token = authorization.replace('Bearer ', '');
   let payload;
-
+  const { NODE_ENV, JWT_SECRET } = process.env;
   try {
     // попытаемся верифицировать токен
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
     // отправим ошибку, если не получилось
     return res

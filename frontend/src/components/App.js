@@ -55,21 +55,20 @@ function App() {
   //проверка токена и данные email 
   function handeleLogin() {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token !== null) {
       mestoAuth.getToken(token)
-        .then((data) => {
-          if (data) {
-            setLoggedIn(true);
-            setUserEmail(data.data.email)
-            history.push('/');
-          }
-        })
-        .catch((err) => {
-          console.log(err);
+      .then((data) => {
+        if (data) {
           setLoggedIn(true);
-          localStorage.removeItem('token');
-        })
-    }
+          setUserEmail(data.email)
+          history.push('/');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        signOut();
+      })
+    } else signOut();
   }
   //сохранение токена для повторного входа
   React.useEffect(() => {
@@ -80,7 +79,7 @@ function App() {
   function signOut() {
     localStorage.removeItem('token');
     setUserEmail('');
-    history.push('/login');
+    history.push('/sign-in');
   }
 
   //стэйты состояния попапов (открыт/закрыт)
@@ -120,21 +119,22 @@ function App() {
     });
   }
   React.useEffect(() => {
-    if (localStorage.getItem('token') === true) {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, initialCards]) => {
-        setCurrentUser(userData);
-        setCards(
-          initialCards.map((item) => ({
-            _id: item._id,
-            name: item.name,
-            link: item.link,
-            likes: item.likes,
-            owner: item.owner
-          })))
-      }).catch((err) => {
-        alert(err);
-      })
+    const token = localStorage.getItem('token');
+    if (token) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, initialCards]) => {
+          setCurrentUser(userData);
+          setCards(
+            initialCards.map((item) => ({
+              _id: item._id,
+              name: item.name,
+              link: item.link,
+              likes: item.likes,
+              owner: item.owner
+            })))
+        }).catch((err) => {
+          alert(err);
+        })
     }
   }, []);
 
