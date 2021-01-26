@@ -28,7 +28,7 @@ const getCard = (req, res, next) => {
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id }).populate('owner')
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -39,7 +39,7 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId).populate('owner')
+  Card.findById(req.params.cardId)
     .then((card) => {
       if ((card.owner._id).toString() === req.user._id) {
         return Card.findByIdAndRemove(req.params.cardId)
