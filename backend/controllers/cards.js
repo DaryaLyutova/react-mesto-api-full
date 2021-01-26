@@ -14,7 +14,7 @@ const getCard = (req, res, next) => {
   Card.findById(req.params._id).populate('owner')
     .then((card) => {
       if (card) {
-        return res.status(200).send({ card });
+        return res.status(200).send(card);
       }
       throw new NotFoundError('Данная карточка отсутствует');
     })
@@ -29,7 +29,7 @@ const getCard = (req, res, next) => {
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id }).populate('owner')
-    .then((card) => { return res.send({ card }); })
+    .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -44,7 +44,7 @@ const deleteCard = (req, res, next) => {
       if ((card.owner._id).toString() === req.user._id) {
         return Card.findByIdAndRemove(req.params.cardId)
           .then((trueCard) => {
-            return res.send({ trueCard });
+            return res.send(trueCard);
           });
       }
       throw new NotFoundError('Нет прав на удаление данной карточки');
@@ -63,7 +63,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => { return res.send({ card }); })
+    .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new NotFoundError('Данная карточка отсутствует'));
@@ -78,7 +78,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => { return res.send({ card }); })
+    .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new NotFoundError('Данная карточка отсутствует'));
