@@ -3,7 +3,7 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-error');
 
 const getCards = (req, res, next) => {
-  Card.find({}).populate('owner').populate('likes')
+  Card.find({}).populate('owner')
     .then((cards) => {
       res.status(200).send(cards);
     })
@@ -11,7 +11,7 @@ const getCards = (req, res, next) => {
 };
 
 const getCard = (req, res, next) => {
-  Card.findById(req.params._id).populate('owner').populate('likes')
+  Card.findById(req.params._id).populate('owner')
     .then((card) => {
       if (card) {
         return res.status(200).send({ card });

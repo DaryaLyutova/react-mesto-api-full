@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -55,14 +55,19 @@ function App() {
   //проверка токена и данные email 
   function handeleLogin() {
     const token = localStorage.getItem('token');
-    mestoAuth.getToken(token)
-      .then((data) => {
-        if (data) {
-          setLoggedIn(true);
-          setUserEmail(data.user.email)
-          history.push('/');
-        }
-      })
+    if (token !== null) {
+      mestoAuth.getToken(token)
+        .then((data) => {
+          if (data) {
+            setLoggedIn(true);
+            setUserEmail(data.user.email)
+            history.push('/');
+          }
+        }).catch((err) => {
+          console.log(err);
+          signOut();
+        })
+    } else signOut();
   }
   //сохранение токена для повторного входа
   React.useEffect(() => {
@@ -113,25 +118,23 @@ function App() {
     });
   }
 
-
-  const location = useLocation();
-
   React.useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, initialCards]) => {
-        setCurrentUser(userData.user);
-        setCards(
-          initialCards.map((item) => ({
-            _id: item._id,
-            name: item.name,
-            link: item.link,
-            likes: item.likes,
-            owner: item.owner
-          })))
-      }).catch((err) => {
-        alert(err);
-      })
-
+    if (localStorage.getItem('token') !== null) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, initialCards]) => {
+          setCurrentUser(userData);
+          setCards(
+            initialCards.map((item) => ({
+              _id: item._id,
+              name: item.name,
+              link: item.link,
+              likes: item.likes,
+              owner: item.owner._id
+            })))
+        }).catch((err) => {
+          alert(err);
+        })
+    }
   }, []);
 
   function handleEditProfileClick() {
@@ -167,7 +170,6 @@ function App() {
       alert(err);
     })
   }
-
   function handleUpdateAvatar(data) {
     api.sethUserAvatar(data).then((dataAvatar) => {
       setCurrentUser(dataAvatar);
@@ -189,10 +191,11 @@ function App() {
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
-
+    const isLiked = card.likes.some(i => i === currentUser._id);
+    console.log(card._id, isLiked)
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
+      console.log(newCard);
       // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
       const newCards = cards.map((c) => c._id === card._id ? newCard : c);
       // Обновляем стейт
