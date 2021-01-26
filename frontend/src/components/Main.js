@@ -21,15 +21,15 @@ function Main({ cards, ...props }) {
         <button type="button" className="profile__add-button" onClick={props.onAddPlace} />
       </section>
       <section className="places">{
-        cards.map((card) => (
-          <Card
-            key={card._id}
-            cards={props.cards}
-            card={card}
-            onCardLike={props.onCardLike}
-            onCardDelete={props.onCardDelete}
-            onCardClick={props.onCardClick}
-            onImageClick={props.onImageClick} />
+        cards.map((card) =>
+        (<Card
+          key={card._id}
+          cards={props.cards}
+          card={card}
+          onCardLike={props.onCardLike}
+          onCardDelete={props.onCardDelete}
+          onCardClick={props.onCardClick}
+          onImageClick={props.onImageClick} />
         )
         )
       }

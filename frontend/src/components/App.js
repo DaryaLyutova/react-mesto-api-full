@@ -20,9 +20,11 @@ import errorImage from '../images/popup/Union (1).svg';
 
 function App() {
 
+  const history = useHistory();
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState('');
 
+  // функция авторизации
   function authorizeUser(email, password, message, resetForm) {
     mestoAuth.authorize(email, password).then((data) => {
       if (data) {
@@ -37,6 +39,7 @@ function App() {
     });
   }
 
+  // функция регистрации
   function registerUser(email, password, resetForm) {
     mestoAuth.register(email, password).then((data) => {
       if (data) {
@@ -51,8 +54,7 @@ function App() {
     });
   }
 
-  const history = useHistory();
-  //проверка токена и данные email 
+  // проверка токена и данные email 
   function handeleLogin() {
     const token = localStorage.getItem('token');
     if (token !== null) {
@@ -74,7 +76,7 @@ function App() {
     handeleLogin();
   }, [loggedIn]);
 
-  //удаление токена при выходе
+  //функция удаления токена
   function signOut() {
     localStorage.removeItem('token');
     setUserEmail('');
@@ -102,6 +104,7 @@ function App() {
     subtitle: 'Что-то пошло не так! Попробуйте ещё раз.',
   });
 
+  // обработчик для попапа успешной регистрации
   function handleInfoTooltipOk() {
     setIsInfoTooltip(!isInfoTooltip);
     setTooltip({
@@ -109,7 +112,7 @@ function App() {
       subtitle: 'Вы успешно зарегистрировались!',
     });
   }
-
+  // обработчик для попапа ошибки при регистрации
   function handleInfoTooltipErr() {
     setIsInfoTooltip(!isInfoTooltip);
     setTooltip({
@@ -118,41 +121,41 @@ function App() {
     });
   }
 
+  // запрос и обработка данных пользователя и карточек
   React.useEffect(() => {
-    if (localStorage.getItem('token') !== null) {
-      Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([userData, initialCards]) => {
-          setCurrentUser(userData);
-          setCards(
-            initialCards.map((item) => ({
-              _id: item._id,
-              name: item.name,
-              link: item.link,
-              likes: item.likes,
-              owner: item.owner._id
-            })))
-        }).catch((err) => {
-          alert(err);
-        })
-    }
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([userData, initialCards]) => {
+        setCurrentUser(userData.user);
+        setCards(
+          initialCards.map((item) => ({
+            _id: item._id,
+            name: item.name,
+            link: item.link,
+            likes: item.likes,
+            owner: item.owner._id
+          })))
+      }).catch((err) => {
+        alert(err);
+      })
   }, []);
 
+  // обработчик для попапа изменения информации о пользователе
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
   }
-
+  // обработчик для попапа добавления новой карточки
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(!isAddPlacePopupOpen);
   }
-
+  // обработчик для попапа изменения аватара
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(!isEditAvatarPopupOpen);
   }
-
+  // обработчик для попапа увеличения изображения
   function handleCardClick() {
     setIsCardOpen(!isCardOpen);
   }
-
+  // функция закрытия попапов
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
@@ -161,24 +164,25 @@ function App() {
     setIsSubmitPopupOpen(false);
     setIsInfoTooltip(false);
   }
-
+  // функция обаботки данных о пользователе
   function handleUpdateUser(data) {
     api.setUserInfo(data).then((dataInfo) => {
-      setCurrentUser(dataInfo);
+      setCurrentUser(dataInfo.user);
       closeAllPopups();
     }).catch((err) => {
       alert(err);
     })
   }
+  // функция обаботки данных аватара
   function handleUpdateAvatar(data) {
     api.sethUserAvatar(data).then((dataAvatar) => {
-      setCurrentUser(dataAvatar);
+      setCurrentUser(dataAvatar.user);
       closeAllPopups();
     }).catch((err) => {
       alert(err);
     })
   }
-
+  // функция обаботки данных карточки
   function handeleAddPlace(data) {
     api.makeNewCard(data).then((newCard) => {
       // Обновляем стейт
@@ -188,14 +192,12 @@ function App() {
       alert(err);
     });
   }
-
+  // функция обаботки лайков
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(i => i === currentUser._id);
-    console.log(card._id, isLiked)
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
-      console.log(newCard);
       // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
       const newCards = cards.map((c) => c._id === card._id ? newCard : c);
       // Обновляем стейт
@@ -204,11 +206,12 @@ function App() {
       alert(err);
     });
   }
+  // обработчик для попапа подтверждения удаления
   function handeleDeleteClick(card) {
     setIsSubmitPopupOpen(!isSubmitPopupOpen);
     setCardForDelete(card);
   }
-
+  // функция обаботки данных
   function handleCardDelete(card) {
     api.deleteCard(card._id).then(() => {
       const deleteId = card._id;
