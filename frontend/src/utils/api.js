@@ -69,8 +69,8 @@ class Api {
 const api = new Api({
   url: 'http://api.lutowa.darya.students.nomoredomains.monster',
   headers: {
-    authorization: `Bearer ${localStorage.getItem('token')}`,
     'Content-Type': 'application/json',
+    authorization: `Bearer ${localStorage.getItem('token')}`,
   },
 });
 

@@ -9,4 +9,4 @@
 84.201.137.104
 
 ## Домен 
-lutowa.darya.students.nomoredomains.icu
+lutowa.darya.students.nomoredomains.monster

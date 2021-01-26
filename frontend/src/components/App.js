@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -55,20 +55,14 @@ function App() {
   //проверка токена и данные email 
   function handeleLogin() {
     const token = localStorage.getItem('token');
-    if (token !== null) {
-      mestoAuth.getToken(token)
+    mestoAuth.getToken(token)
       .then((data) => {
         if (data) {
           setLoggedIn(true);
-          setUserEmail(data.email)
+          setUserEmail(data.user.email)
           history.push('/');
         }
       })
-      .catch((err) => {
-        console.log(err);
-        signOut();
-      })
-    } else signOut();
   }
   //сохранение токена для повторного входа
   React.useEffect(() => {
@@ -118,24 +112,26 @@ function App() {
       subtitle: 'Что-то пошло не так! Попробуйте ещё раз.',
     });
   }
+
+
+  const location = useLocation();
+
   React.useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([userData, initialCards]) => {
-          setCurrentUser(userData);
-          setCards(
-            initialCards.map((item) => ({
-              _id: item._id,
-              name: item.name,
-              link: item.link,
-              likes: item.likes,
-              owner: item.owner
-            })))
-        }).catch((err) => {
-          alert(err);
-        })
-    }
+    Promise.all([api.getUserInfo(), api.getInitialCards()])
+      .then(([userData, initialCards]) => {
+        setCurrentUser(userData.user);
+        setCards(
+          initialCards.map((item) => ({
+            _id: item._id,
+            name: item.name,
+            link: item.link,
+            likes: item.likes,
+            owner: item.owner
+          })))
+      }).catch((err) => {
+        alert(err);
+      })
+
   }, []);
 
   function handleEditProfileClick() {

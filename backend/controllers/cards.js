@@ -39,7 +39,7 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
+  Card.findById(req.params.cardId).populate('owner')
     .then((card) => {
       if ((card.owner._id).toString() === req.user._id) {
         return Card.findByIdAndRemove(req.params.cardId)
