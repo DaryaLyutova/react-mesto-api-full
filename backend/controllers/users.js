@@ -44,7 +44,7 @@ const createUser = (req, res, next) => {
       });
     })
     .then((user) => {
-      res.send({ body: user });
+      res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -94,7 +94,7 @@ const updateUser = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => { res.send({ data: user }); })
+    .then((user) => { res.send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -114,7 +114,7 @@ const updateAvatar = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => { res.send({ data: user }); })
+    .then((user) => { res.send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
