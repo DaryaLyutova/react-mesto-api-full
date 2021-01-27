@@ -1,6 +1,5 @@
 const Card = require('../models/card');
-const NotFoundError = require('../errors/not-found-err');
-const BadRequestError = require('../errors/bad-request-error');
+const AllErrors = require('../errors/all-errors');
 
 const getCards = (req, res, next) => {
   Card.find({}).populate('owner')
@@ -16,11 +15,11 @@ const getCard = (req, res, next) => {
       if (card) {
         return res.status(200).send(card);
       }
-      throw new NotFoundError('Данная карточка отсутствует');
+      throw new AllErrors('Данная карточка отсутствует', 404);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFoundError('Данная карточка отсутствует'));
+        next(new AllErrors('Данная карточка отсутствует', 404));
       }
       next(err);
     });
@@ -32,7 +31,7 @@ const createCard = (req, res, next) => {
     .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new AllErrors('Переданы некорректные данные', 400));
       }
       next(err);
     });
@@ -47,11 +46,11 @@ const deleteCard = (req, res, next) => {
             return res.send(trueCard);
           });
       }
-      throw new NotFoundError('Нет прав на удаление данной карточки');
+      throw new AllErrors('Нет прав на удаление данной карточки', 403);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFoundError('Данная карточка отсутствует'));
+        next(new AllErrors('Данная карточка отсутствует', 404));
       }
       next(err);
     });
@@ -66,7 +65,7 @@ const likeCard = (req, res, next) => {
     .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFoundError('Данная карточка отсутствует'));
+        next(new AllErrors('Данная карточка отсутствует', 404));
       }
       next(err);
     });
@@ -81,7 +80,7 @@ const dislikeCard = (req, res, next) => {
     .then((card) => { return res.send(card); })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFoundError('Данная карточка отсутствует'));
+        next(new AllErrors('Данная карточка отсутствует', 404));
       }
       next(err);
     });

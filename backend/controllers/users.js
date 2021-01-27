@@ -3,9 +3,7 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const NotFoundError = require('../errors/not-found-err');
-const BadRequestError = require('../errors/bad-request-error');
-const LoginError = require('../errors/login-error');
+const AllErrors = require('../errors/all-errors');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -21,12 +19,12 @@ const getUser = (req, res, next) => {
       }
       // если такого пользователя нет,
       // сгенерируем исключение
-      throw new NotFoundError('Нет пользователя с таким id');
+      throw new AllErrors('Нет пользователя с таким id', 404);
     })
     .catch((err) => {
       // проверим на валидность
       if (err.kind === 'ObjectId') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new AllErrors('Переданы некорректные данные', 400));
       }
       return next(err);
     });
@@ -48,10 +46,10 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new AllErrors('Переданы некорректные данные', 400));
       }
       if (err.name === 'MongoError') {
-        next(new BadRequestError('Пользователь с данным именем уже существует'));
+        next(new AllErrors('Пользователь с данным именем уже существует', 409));
       }
       return next(err);
     });
@@ -69,7 +67,7 @@ const login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'Error') {
-        next(new LoginError('Неверный логин или пароль'));
+        next(new AllErrors('Неверный логин или пароль', 401));
       }
       return next(err);
     });
@@ -97,7 +95,7 @@ const updateUser = (req, res, next) => {
     .then((user) => { res.send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new AllErrors('Переданы некорректные данные', 400));
       }
       return next(err);
     });
@@ -117,7 +115,7 @@ const updateAvatar = (req, res, next) => {
     .then((user) => { res.send({ user }); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new AllErrors('Переданы некорректные данные', 400));
       }
       return next(err);
     });
