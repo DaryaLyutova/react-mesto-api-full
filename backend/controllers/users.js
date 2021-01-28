@@ -76,7 +76,12 @@ const login = (req, res, next) => {
 const getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      return res.status(200).send({ user });
+      return res.status(200).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch(next);
 };
