@@ -58,33 +58,41 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .then((card) => { return res.send(card); })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new AllErrors('Данная карточка отсутствует', 404));
-      }
-      next(err);
-    });
+  Card.findById(req.params.cardId)
+    .orFail(new AllErrors('Данная карточка отсутствует', 404))
+    .then((card) => {
+      Card.findByIdAndUpdate(
+        card._id,
+        { $addToSet: { likes: req.user._id } },
+        { new: true },
+      )
+        .then((newCard) => { return res.send(newCard); })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            next(new AllErrors('Данная карточка отсутствует', 404));
+          }
+        });
+    })
+    .catch((err) => { return next(err); });
 };
 
 const dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-    .then((card) => { return res.send(card); })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new AllErrors('Данная карточка отсутствует', 404));
-      }
-      next(err);
-    });
+  Card.findById(req.params.cardId)
+    .orFail(new AllErrors('Данная карточка отсутствует', 404))
+    .then((card) => {
+      Card.findByIdAndUpdate(
+        card._id,
+        { $pull: { likes: req.user._id } },
+        { new: true },
+      )
+        .then((newCard) => { return res.send(newCard); })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            next(new AllErrors('Данная карточка отсутствует', 404));
+          }
+        });
+    })
+    .catch((err) => { return next(err); });
 };
 
 module.exports = {
