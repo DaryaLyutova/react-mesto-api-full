@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const { CheckUrl } = require('../utils/consts');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,8 +21,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(v) {
-        // eslint-disable-next-line no-useless-escape
-        const str = /https?\:\/\/w?w?w?(\w*([\.\-\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)*\#?/gim;
+        const str = CheckUrl;
         return str.test(v);
       },
       message: 'Некоррекные данные',

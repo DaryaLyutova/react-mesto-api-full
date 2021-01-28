@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { CheckUrl } = require('../utils/consts');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -13,7 +14,7 @@ const cardSchema = new mongoose.Schema({
     validate: {
       validator(v) {
         // eslint-disable-next-line no-useless-escape
-        const str = /https?\:\/\/w?w?w?(\w*([\.\-\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)*\#?/gim;
+        const str = CheckUrl;
         return str.test(v);
       },
       message: 'Некоррекные данные',
