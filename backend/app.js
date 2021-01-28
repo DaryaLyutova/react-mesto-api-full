@@ -6,12 +6,16 @@ const cors = require('cors');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cardsRouter = require('./routes/cards');
+const usersRouter = require('./routes/users');
+const errorRouter = require('./routes/errorUrl');
 
 const app = express();
-// app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
-app.use(cors());
 
 const PORT = 3000;
+
+// app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,10 +25,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
-
-const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
-const errorRouter = require('./routes/errorUrl');
 
 // подключаем логгер запросов
 app.use(requestLogger);

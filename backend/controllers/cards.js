@@ -53,7 +53,10 @@ const deleteCard = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new AllErrors('Данная карточка отсутствует', 404));
       }
-      next(err);
+      if (err.name === 'CastError') {
+        next(new AllErrors('Невалидный id', 400));
+      }
+      return next(err);
     });
 };
 
@@ -73,7 +76,12 @@ const likeCard = (req, res, next) => {
           }
         });
     })
-    .catch((err) => { return next(err); });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new AllErrors('Невалидный id', 400));
+      }
+      return next(err);
+    });
 };
 
 const dislikeCard = (req, res, next) => {
@@ -92,7 +100,12 @@ const dislikeCard = (req, res, next) => {
           }
         });
     })
-    .catch((err) => { return next(err); });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new AllErrors('Невалидный id', 400));
+      }
+      return next(err);
+    });
 };
 
 module.exports = {

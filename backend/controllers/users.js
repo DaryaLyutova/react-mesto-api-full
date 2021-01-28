@@ -98,11 +98,16 @@ const updateUser = (req, res, next) => {
     },
   )
     .then((user) => { res.send({ user }); })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new AllErrors('Переданы некорректные данные', 400));
+      } else {
+        if (err.name === 'CastError') {
+          next(new AllErrors('Невалидный id', 400));
+        }
+        return next(err);
       }
-      return next(err);
     });
 };
 
