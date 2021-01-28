@@ -39,6 +39,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
+    .orFail(new AllErrors('Данная карточка отсутствует', 404))
     .then((card) => {
       if ((card.owner._id).toString() === req.user._id) {
         return Card.findByIdAndRemove(req.params.cardId)
