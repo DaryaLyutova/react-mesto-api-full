@@ -3,6 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUser, updateUser, getMe, updateAvatar,
 } = require('../controllers/users');
+const { CheckUrlJoi } = require('../utils/consts');
 
 router.get('/users', getUsers);
 
@@ -19,8 +20,7 @@ router.patch('/users/me', celebrate({
 
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    // eslint-disable-next-line no-useless-escape
-    avatar: Joi.string().regex(/https?\:\/\/w?w?w?(\w*([\.\-\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)*\#?/),
+    avatar: Joi.string().required().regex(CheckUrlJoi),
   }),
 }), updateAvatar);
 

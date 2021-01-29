@@ -21,7 +21,7 @@ const getCard = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new AllErrors('Данная карточка отсутствует', 404));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -33,7 +33,7 @@ const createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new AllErrors('Переданы некорректные данные', 400));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -50,9 +50,6 @@ const deleteCard = (req, res, next) => {
       throw new AllErrors('Нет прав на удаление данной карточки', 403);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new AllErrors('Данная карточка отсутствует', 404));
-      }
       if (err.name === 'CastError') {
         next(new AllErrors('Невалидный id', 400));
       }
@@ -74,6 +71,7 @@ const likeCard = (req, res, next) => {
           if (err.name === 'CastError') {
             next(new AllErrors('Данная карточка отсутствует', 404));
           }
+          return next(err);
         });
     })
     .catch((err) => {
@@ -98,6 +96,7 @@ const dislikeCard = (req, res, next) => {
           if (err.name === 'CastError') {
             next(new AllErrors('Данная карточка отсутствует', 404));
           }
+          return next(err);
         });
     })
     .catch((err) => {
