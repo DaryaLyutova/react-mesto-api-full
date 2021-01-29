@@ -58,7 +58,6 @@ function App() {
   function handeleLogin() {
     const token = localStorage.getItem('token');
     if (token !== null) {
-      console.log(token);
       mestoAuth.getToken(token)
         .then((data) => {
           if (data) {
@@ -127,7 +126,6 @@ function App() {
     if (localStorage.getItem('token') !== null) {
       Promise.all([api.getUserInfo(), api.getInitialCards()])
         .then(([userData, initialCards]) => {
-          console.log(initialCards)
           setCurrentUser(userData);
           setCards(
             initialCards.map((item) => ({
@@ -170,9 +168,7 @@ function App() {
   }
   // функция обаботки данных о пользователе
   function handleUpdateUser(data) {
-    console.log(data);
     api.setUserInfo(data).then((dataInfo) => {
-      console.log(dataInfo);
       setCurrentUser(dataInfo.user);
       closeAllPopups();
     }).catch((err) => {
@@ -190,9 +186,7 @@ function App() {
   }
   // функция обаботки данных карточки
   function handeleAddPlace(data) {
-    console.log(data);
     api.makeNewCard(data).then((newCard) => {
-      console.log(newCard);
       // Обновляем стейт
       setCards([newCard, ...cards]);
       closeAllPopups();
