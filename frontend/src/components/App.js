@@ -58,6 +58,7 @@ function App() {
   function handeleLogin() {
     const token = localStorage.getItem('token');
     if (token !== null) {
+      console.log(token);
       mestoAuth.getToken(token)
         .then((data) => {
           if (data) {
@@ -123,21 +124,23 @@ function App() {
 
   // запрос и обработка данных пользователя и карточек
   React.useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, initialCards]) => {
-        console.log(initialCards)
-        setCurrentUser(userData);
-        setCards(
-          initialCards.map((item) => ({
-            _id: item._id,
-            name: item.name,
-            link: item.link,
-            likes: item.likes,
-            owner: item.owner._id
-          })))
-      }).catch((err) => {
-        alert(err);
-      })
+    if (localStorage.getItem('token') !== null) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, initialCards]) => {
+          console.log(initialCards)
+          setCurrentUser(userData);
+          setCards(
+            initialCards.map((item) => ({
+              _id: item._id,
+              name: item.name,
+              link: item.link,
+              likes: item.likes,
+              owner: item.owner._id
+            })))
+        }).catch((err) => {
+          alert(err);
+        })
+    }
   }, []);
 
   // обработчик для попапа изменения информации о пользователе
