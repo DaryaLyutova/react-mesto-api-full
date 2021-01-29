@@ -62,7 +62,7 @@ function App() {
         .then((data) => {
           if (data) {
             setLoggedIn(true);
-            setUserEmail(data.user.email)
+            setUserEmail(data.email)
             history.push('/');
           }
         }).catch((err) => {
@@ -125,7 +125,7 @@ function App() {
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, initialCards]) => {
-        setCurrentUser(userData.user);
+        setCurrentUser(userData);
         setCards(
           initialCards.map((item) => ({
             _id: item._id,
@@ -166,7 +166,9 @@ function App() {
   }
   // функция обаботки данных о пользователе
   function handleUpdateUser(data) {
+    console.log(data);
     api.setUserInfo(data).then((dataInfo) => {
+      console.log(dataInfo);
       setCurrentUser(dataInfo.user);
       closeAllPopups();
     }).catch((err) => {
@@ -184,7 +186,9 @@ function App() {
   }
   // функция обаботки данных карточки
   function handeleAddPlace(data) {
+    console.log(data);
     api.makeNewCard(data).then((newCard) => {
+      console.log(newCard);
       // Обновляем стейт
       setCards([newCard, ...cards]);
       closeAllPopups();

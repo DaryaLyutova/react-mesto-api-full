@@ -100,7 +100,7 @@ const updateUser = (req, res, next) => {
             runValidators: true,
           },
         )
-          .then((user) => { res.send({ user }); });
+          .then((user) => { res.send(user); });
       }
       // eslint-disable-next-line consistent-return
       throw next(new AllErrors('Нет прав на удаление данной карточки', 403));
@@ -127,7 +127,7 @@ const updateAvatar = (req, res, next) => {
             runValidators: true,
           },
         )
-          .then((user) => { res.send({ user }); });
+          .then((user) => { res.send(user); });
       }
       // eslint-disable-next-line consistent-return
       throw next(new AllErrors('Нет прав на удаление данной карточки', 403));
