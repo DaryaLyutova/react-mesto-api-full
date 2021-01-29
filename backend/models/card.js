@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { CheckUrl } = require('../utils/consts');
+const { CheckUrlJoi } = require('../utils/consts');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -14,7 +14,7 @@ const cardSchema = new mongoose.Schema({
     validate: {
       validator(v) {
         // eslint-disable-next-line no-useless-escape
-        const str = CheckUrl;
+        const str = CheckUrlJoi;
         return str.test(v);
       },
       message: 'Некоррекные данные',

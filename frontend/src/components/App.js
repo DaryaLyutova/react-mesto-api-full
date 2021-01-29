@@ -125,6 +125,7 @@ function App() {
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, initialCards]) => {
+        console.log(initialCards)
         setCurrentUser(userData);
         setCards(
           initialCards.map((item) => ({

@@ -27,13 +27,14 @@ const getCard = (req, res, next) => {
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
+  console.log(name, link, req.user._id);
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => { return res.send(card); })
+    .then((card) => { res.send(card); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new AllErrors('Переданы некорректные данные', 400));
       }
-      return next(err);
+      next(err);
     });
 };
 
