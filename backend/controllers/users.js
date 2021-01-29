@@ -15,7 +15,7 @@ const getUser = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
       if (user) {
-        res.send({ user });
+        res.send(user);
       }
       // если такого пользователя нет,
       // сгенерируем исключение
@@ -42,7 +42,12 @@ const createUser = (req, res, next) => {
       });
     })
     .then((user) => {
-      res.send({ user });
+      res.send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -76,12 +81,7 @@ const login = (req, res, next) => {
 const getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      return res.status(200).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-      });
+      return res.status(200).send(user);
     })
     .catch(next);
 };
