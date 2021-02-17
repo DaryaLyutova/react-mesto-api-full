@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const { celebrate, Joi, errors } = require('celebrate');
 const cors = require('cors');
 const { createUser, login } = require('./controllers/users');
@@ -11,26 +10,11 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 const errorRouter = require('./routes/errorUrl');
+const limiter = require('./utils/limiter');
 
 const app = express();
 
 const PORT = 3000;
-
-// app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
-app.use(cors());
-// защитим заголовки
-app.use(helmet());
-// ограничиваем количество запросов
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-});
-
-//  apply to all requests
-app.use(limiter);
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -38,15 +22,19 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
+// app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
+app.use(cors());
+// защитим заголовки
+app.use(helmet());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // подключаем логгер запросов
 app.use(requestLogger);
 
-// краш-тест для проверки востановления сервиса pm2 после падения
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+//  apply to all requests
+app.use(limiter);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({

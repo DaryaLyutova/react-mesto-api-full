@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { default: validator } = require('validator');
 const {
   getUsers, getUser, updateUser, getMe, updateAvatar,
 } = require('../controllers/users');
-const { CheckUrlJoi } = require('../utils/consts');
 
 router.get('/users', getUsers);
 
@@ -20,7 +20,11 @@ router.patch('/users/me', celebrate({
 
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().regex(CheckUrlJoi),
+    avatar: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      } return helpers.message('Поле "image" должно быть валидным url-адресом');
+    }),
   }),
 }), updateAvatar);
 
