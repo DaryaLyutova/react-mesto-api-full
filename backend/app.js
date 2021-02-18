@@ -1,9 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const { celebrate, Joi, errors } = require('celebrate');
-const cors = require('cors');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -16,12 +16,6 @@ const app = express();
 
 const PORT = 3000;
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
-
 // app.use(cors({ origin: 'http://lutowa.darya.students.nomoredomains.monster' }));
 app.use(cors());
 // защитим заголовки
@@ -29,6 +23,12 @@ app.use(helmet());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+});
 
 // подключаем логгер запросов
 app.use(requestLogger);
@@ -63,9 +63,6 @@ app.use(errorLogger);
 app.use(errors());
 
 // централизованный обработчик ошибок
-// eslint-disable-next-line no-unused-vars
-// централизованный обработчик ошибок
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
@@ -78,6 +75,7 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
 
 app.listen(PORT, () => {
